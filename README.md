@@ -2,23 +2,6 @@
 
 比较固定 Top-K MOPD 与 Bandit-K MOPD。两者均由学生模型生成 on-policy 回答，再按样本领域固定选择 IF、Math 或 Code 教师；Bandit 只选择蒸馏支持集大小 `k`，不选择教师。
 
-## 代码与运行
-
-- `train.py`：训练入口。
-- `topk_mopd/`：MOPD loss、模型推理、CPU AdamW、固定 Top-K 与在线 Bandit-K 训练实现。
-- `configs/naive-topk64-200-bs2.json`：固定 `k=64` 的基线配置。
-- `configs/online-bandit-k-200-bs2.json`：在线 Bandit-K 配置。
-
-依赖 Python、PyTorch、Transformers 与 Safetensors。配置文件保留了本次服务器实验使用的模型、数据和输出路径；在其他机器运行时需先修改这些路径。
-
-```bash
-python train.py --config configs/naive-topk64-200-bs2.json --check-only
-python train.py --config configs/online-bandit-k-200-bs2.json --check-only
-
-python -u train.py --config configs/naive-topk64-200-bs2.json
-python -u train.py --config configs/online-bandit-k-200-bs2.json
-```
-
 ## 固定 Top-K
 
 Naive MOPD基线在所有训练步骤固定使用 `k=64`。用于判断 Bandit-K 是否能以更小的平均 k 保持相同效果。
@@ -99,7 +82,7 @@ Naive MOPD 与 Bandit-K MOPD 除 k 策略外使用相同训练设置。
 
 ## 实验结果
 
-所有数值均为百分比。三个模型使用相同的评测 prompt 和生成参数；Naive 与 Bandit-K 均训练200步。
+所有数值均为百分比。所有模型使用相同的评测 prompt 和生成参数；Naive 与 Bandit-K 均训练200步。
 
 <table>
   <thead>
@@ -127,18 +110,26 @@ Naive MOPD 与 Bandit-K MOPD 除 k 策略外使用相同训练设置。
       <td>64.66</td>
     </tr>
     <tr>
+      <td>RL Teachers (Math / IF / Code)</td>
+      <td><strong>67.50</strong></td>
+      <td><strong>64.58</strong></td>
+      <td><strong>69.00</strong></td>
+      <td><strong>92.24</strong></td>
+      <td>71.93</td>
+    </tr>
+    <tr>
       <td>Naive MOPD (fixed k=64, checkpoint-200)</td>
-      <td><strong>66.25</strong></td>
+      <td>66.25</td>
       <td>57.92</td>
       <td>59.67</td>
-      <td><strong>85.03</strong></td>
+      <td>85.03</td>
       <td>74.32</td>
     </tr>
     <tr>
       <td>Bandit-K MOPD (Disjoint LinUCB, checkpoint-200)</td>
       <td>65.42</td>
-      <td><strong>58.75</strong></td>
-      <td><strong>60.67</strong></td>
+      <td>58.75</td>
+      <td>60.67</td>
       <td>84.47</td>
       <td><strong>74.77</strong></td>
     </tr>
